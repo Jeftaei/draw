@@ -53,6 +53,7 @@ impl Canvas {
         self.canvas_size = size;
 
         // TODO: figure out how to resize this and have the new area be filled in with a default color
+        // without overwriting the rest of the canvas
         self.surface
             .resize(width, height)
             .expect("failed to resize canvas surface");
@@ -68,11 +69,10 @@ impl Canvas {
     }
 
     pub fn to_pixel_pos(location: PhysicalPosition<f64>, size: PhysicalSize<u32>) -> u32 {
-        location.x as u32 + (location.y as u32 * size.width)
-    }
+        let x = (location.x as u32).clamp(0, size.width - 1);
+        let y = (location.y as u32).clamp(0, size.height - 1);
 
-    pub fn pixel_from_coord(x: u32, y: u32, canvas_width: u32) -> u32 {
-        x + (y * canvas_width)
+        x + (y * size.width)
     }
 
     pub fn get_cell_neighbors(
