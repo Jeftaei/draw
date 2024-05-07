@@ -75,6 +75,46 @@ impl Canvas {
         x + (y * size.width)
     }
 
+    pub fn get_pixels_in_line(
+        loc1: PhysicalPosition<f64>,
+        loc2: PhysicalPosition<f64>,
+        size: PhysicalSize<u32>,
+    ) -> Vec<u32> {
+        let mut points: Vec<u32> = vec![];
+
+        let (x1, y1) = (loc1.x as i32, loc1.y as i32);
+        let (x2, y2) = (loc2.x as i32, loc2.y as i32);
+
+        let dx = (x2 - x1).abs();
+        let dy = (y2 - y1).abs();
+        let sx = if x1 < x2 { 1 } else { -1 };
+        let sy = if y1 < y2 { 1 } else { -1 };
+
+        let mut err = dx - dy;
+        let mut x = x1;
+        let mut y = y1;
+
+        loop {
+            points.push(Self::to_pixel_pos((x, y).into(), size));
+
+            if x == x2 && y == y2 {
+                break;
+            }
+
+            let e2 = 2 * err;
+            if e2 > -dy {
+                err -= dy;
+                x += sx;
+            }
+            if e2 < dx {
+                err += dx;
+                y += sy;
+            }
+        }
+
+        points
+    }
+
     pub fn get_cell_neighbors(
         location: PhysicalPosition<f64>,
         canvas_size: PhysicalSize<u32>,
@@ -102,10 +142,15 @@ impl Canvas {
         vec![Self::to_pixel_pos(location, canvas_size)]
     }
 
-    pub fn draw(&mut self, location: PhysicalPosition<f64>) -> Result<(), Box<dyn Error>> {
+    pub fn draw(
+        &mut self,
+        location: PhysicalPosition<f64>,
+        prev_location: PhysicalPosition<f64>,
+    ) -> Result<(), Box<dyn Error>> {
         let mut buffer = self.surface.buffer_mut()?;
 
-        let pxls: Vec<u32> = Self::get_cell_neighbors(location, self.canvas_size, self.brush_size);
+        // let pxls: Vec<u32> = Self::get_cell_neighbors(location, self.canvas_size, self.brush_size);
+        let pxls: Vec<u32> = Self::get_pixels_in_line(prev_location, location, self.canvas_size);
 
         for px in pxls {
             // dbg!(px);

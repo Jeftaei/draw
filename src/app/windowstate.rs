@@ -11,13 +11,36 @@ use winit::{
     window::{Fullscreen, Window},
 };
 
+pub struct CursorPos {
+    pub current: Option<PhysicalPosition<f64>>,
+    pub previous: Option<PhysicalPosition<f64>>,
+}
+
+impl CursorPos {
+    pub fn new() -> Self {
+        Self {
+            current: None,
+            previous: None,
+        }
+    }
+
+    pub fn set(&mut self, v: Option<PhysicalPosition<f64>>) {
+        self.previous = self.current;
+        self.current = v;
+    }
+
+    pub fn get(&self) -> (Option<PhysicalPosition<f64>>, Option<PhysicalPosition<f64>>) {
+        (self.current, self.previous)
+    }
+}
+
 pub struct WindowState {
     /// Surface must be dropped before window
     pub canvas: Canvas,
 
     pub window: Arc<Window>,
 
-    pub cursor_pos: Option<PhysicalPosition<f64>>,
+    pub cursor_pos: CursorPos,
 
     pub modifiers: ModifiersState,
 
@@ -41,7 +64,8 @@ impl WindowState {
             canvas,
             window,
 
-            cursor_pos: None,
+            cursor_pos: CursorPos::new(),
+
             modifiers: Default::default(),
             zoom: Default::default(),
             panned: Default::default(),
@@ -57,7 +81,7 @@ impl WindowState {
     }
 
     pub fn cursor_moved(&mut self, position: PhysicalPosition<f64>) {
-        self.cursor_pos = Some(position);
+        self.cursor_pos.set(Some(position));
 
         if self.drawing {
             let _ = self.draw_at_cursor();
@@ -65,7 +89,7 @@ impl WindowState {
     }
 
     pub fn cursor_left(&mut self) {
-        self.cursor_pos = None;
+        self.cursor_pos.set(None);
     }
 
     pub fn toggle_decoration(&self) {
@@ -91,13 +115,19 @@ impl WindowState {
     }
 
     pub fn draw_at_cursor(&mut self) -> Result<(), Box<dyn Error>> {
-        match self.cursor_pos {
-            Some(pos) => {
-                println!("drawing");
-                self.canvas.draw(pos).expect("failed to draw?");
+        match self.cursor_pos.get() {
+            // if theres no current position then we either havent got a cursor moved event,
+            // or we have left the window
+            (None, _) => Ok(()),
+
+            (Some(pos), Some(pos2)) => {
+                self.canvas.draw(pos, pos2).expect("failed to draw");
                 Ok(())
             }
-            None => Ok(()),
+
+            // technically this isnt "unreachable", but it would take some funky shit to actually hit it,
+            // (having a current position and no previous position, in which case it shouldnt ever actually try to draw?)
+            (_, _) => unreachable!(),
         }
     }
 
