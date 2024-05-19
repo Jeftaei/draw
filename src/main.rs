@@ -16,6 +16,8 @@ mod modules;
 
 fn main() -> Result<(), Box<dyn Error>> {
     let event_loop = EventLoop::<UserEvent>::with_user_event().build()?;
+    event_loop.listen_device_events(DeviceEvents::Always);
+
     let _loop_proxy = event_loop.create_proxy();
 
     let _ = _loop_proxy.send_event(UserEvent::StartMinimized);

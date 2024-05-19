@@ -27,6 +27,8 @@ pub struct Binding<T: Eq> {
     conditions: TriggerEvents,
 
     pub action: Actions,
+
+    is_pressed: bool,
 }
 
 impl<T: Eq> Binding<T> {
@@ -41,6 +43,7 @@ impl<T: Eq> Binding<T> {
             mods,
             action,
             conditions,
+            is_pressed: false,
         }
     }
 
@@ -103,5 +106,9 @@ pub const KEYBOARD_BINDINGS: &[Binding<&'static str>] = &[
     ),
 ];
 
+pub const DEVICE_BINDINGS: &[Binding<KeyCode>] = &[Binding::new(
+    KeyCode::KeyD,
+    ModifiersState::CONTROL.union(ModifiersState::ALT),
+    Actions::ToggleDrawMode,
     TriggerEvents::OneTime(ElementState::Pressed),
 )];

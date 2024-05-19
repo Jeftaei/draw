@@ -107,20 +107,78 @@ impl ApplicationHandler<UserEvent> for Application {
         }
     }
 
-    // fn device_event(
-    //     &mut self,
-    //     event_loop: &winit::event_loop::ActiveEventLoop,
-    //     device_id: winit::event::DeviceId,
-    //     event: winit::event::DeviceEvent,
-    // ) {
-    //     match event {
-    //         DeviceEvent::Button { button, state } => {
-    //             dbg!(button, state);
-    //         }
-    //         DeviceEvent::MouseMotion { delta } => {}
-    //         _ => {}
-    //     };
-    // }
+    fn device_event(
+        &mut self,
+        event_loop: &winit::event_loop::ActiveEventLoop,
+        device_id: winit::event::DeviceId,
+        event: winit::event::DeviceEvent,
+    ) {
+        // FIXME
+        // Lol, this should be fine since the first window SHOULD ! always be the top level/parent window
+        // if for some reason i start using multiple windows, i should fix this...
+        let wid = match self.windows.keys().nth(0) {
+            Some(wid) => *wid,
+            None => return,
+        };
+
+        match event {
+            DeviceEvent::Button { .. } => {}
+            DeviceEvent::Key(rke) => {
+                let keypressed = match rke.physical_key {
+                    PhysicalKey::Code(k) => match k {
+                        KeyCode::AltLeft
+                        | KeyCode::AltRight
+                        | KeyCode::SuperLeft
+                        | KeyCode::SuperRight
+                        | KeyCode::ControlLeft
+                        | KeyCode::ControlRight
+                        | KeyCode::ShiftLeft
+                        | KeyCode::ShiftRight => {
+                            self.dmods.set(&k, &rke.state);
+                            return;
+                        }
+                        _ => k,
+                    },
+                    PhysicalKey::Unidentified(_) => {
+                        return;
+                    }
+                };
+
+                // i have a Small feeling i did this in a dumb way, Guess ill figure it out later :D
+                match self.keymap.get_mut(&keypressed) {
+                    None => {
+                        self.keymap.insert(keypressed, rke.state.is_pressed());
+                    }
+                    Some(v) => match v {
+                        false => {
+                            if rke.state.is_pressed() {
+                                *v = true;
+                            }
+                            // if released event, do nothing, probably
+                        }
+                        // Key has been pressed before, and has yet to recieve a release event
+                        true => {
+                            if rke.state.is_pressed() {
+                                return;
+                            } else {
+                                // if its a release event and the key was marked as pressed, make it as not pressed
+                                *v = false
+                            }
+                        }
+                    },
+                };
+
+                println!("an event has happened");
+
+                if let Some(action) =
+                    Self::process_device_binding(keypressed, self.dmods, rke.state)
+                {
+                    self.handle_action(event_loop, wid, action);
+                };
+            }
+            _ => {}
+        };
+    }
 
     fn resumed(&mut self, event_loop: &winit::event_loop::ActiveEventLoop) {
         self.create_window(event_loop)

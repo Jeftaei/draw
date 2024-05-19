@@ -49,6 +49,8 @@ pub struct WindowState {
     pub panned: PhysicalPosition<f32>,
 
     pub drawing: bool,
+
+    pub draw_mode: bool,
 }
 
 impl WindowState {
@@ -69,7 +71,9 @@ impl WindowState {
             modifiers: Default::default(),
             zoom: Default::default(),
             panned: Default::default(),
+
             drawing: false,
+            draw_mode: false,
         };
 
         state.resize(size);

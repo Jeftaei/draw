@@ -26,6 +26,10 @@ pub struct Application {
     pub windows: HashMap<WindowId, WindowState>,
 
     pub context: Option<Context<DisplayHandle<'static>>>,
+
+    pub dmods: DModifiers,
+
+    pub keymap: HashMap<KeyCode, bool>,
 }
 
 impl Application {
@@ -45,6 +49,10 @@ impl Application {
         Self {
             context,
             windows: Default::default(),
+
+            dmods: Default::default(),
+
+            keymap: Default::default(),
         }
     }
 
@@ -146,6 +154,18 @@ impl Application {
         KEYBOARD_BINDINGS.iter().find_map(|binding| {
             binding
                 .is_triggered_by(&key, mods, &state)
+                .then_some(binding.action)
+        })
+    }
+
+    pub fn process_device_binding(
+        key: KeyCode,
+        mods: DModifiers,
+        state: ElementState,
+    ) -> Option<Actions> {
+        DEVICE_BINDINGS.iter().find_map(|binding| {
+            binding
+                .is_triggered_by(&key, &mods.into(), &state)
                 .then_some(binding.action)
         })
     }
