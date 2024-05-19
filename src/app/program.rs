@@ -1,4 +1,6 @@
-use super::bindings::KEYBOARD_BINDINGS;
+use crate::modules::dmodifiers::DModifiers;
+
+use super::bindings::{DEVICE_BINDINGS, KEYBOARD_BINDINGS};
 use super::windowstate::WindowState;
 use super::{actions::Actions, bindings::MOUSE_BINDINGS};
 
@@ -6,13 +8,15 @@ use softbuffer::Context;
 use std::{collections::HashMap, error::Error};
 use wgpu::rwh::{DisplayHandle, HasDisplayHandle};
 use winit::event::ElementState;
+use winit::keyboard::KeyCode;
+use winit::platform::windows::WindowExtWindows;
 use winit::window::Fullscreen;
 use winit::{
     event::MouseButton,
     event_loop::{ActiveEventLoop, EventLoop},
     keyboard::ModifiersState,
     window::{CustomCursor, Icon, WindowId},
-    window::{Window, WindowAttributes},
+    window::{Window, WindowAttributes, WindowLevel},
 };
 
 pub struct Application {

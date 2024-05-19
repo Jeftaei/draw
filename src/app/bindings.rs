@@ -1,7 +1,7 @@
 use super::actions::Actions;
 use winit::{
     event::{ElementState, MouseButton},
-    keyboard::ModifiersState,
+    keyboard::{KeyCode, ModifiersState},
 };
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]

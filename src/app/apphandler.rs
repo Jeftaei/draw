@@ -1,8 +1,11 @@
+use crate::modules::dmodifiers::DModifiers;
+
 use super::bindings::TriggerEvents;
 use super::windowstate::WindowState;
 use super::{bindings::Binding, program::Application};
-use winit::event::{DeviceEvent, MouseButton};
-use winit::keyboard::Key;
+use winit::event::{DeviceEvent, ElementState, MouseButton};
+use winit::keyboard::{Key, KeyCode, PhysicalKey};
+use winit::window::WindowId;
 use winit::{application::ApplicationHandler, event::WindowEvent};
 
 #[derive(Debug, Clone, Copy)]

@@ -5,7 +5,8 @@ use std::error::Error;
 use app::{apphandler::UserEvent, program::Application};
 use softbuffer::{Context, Surface};
 use winit::{
-    event_loop::{EventLoop, EventLoopBuilder},
+    event::{DeviceEvent, ElementState},
+    event_loop::{DeviceEvents, EventLoop, EventLoopBuilder},
     platform::run_on_demand::EventLoopExtRunOnDemand,
     window::Window,
 };
