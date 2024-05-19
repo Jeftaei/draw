@@ -51,10 +51,13 @@ impl Application {
         let window_attributes = Window::default_attributes()
             .with_title("test_window")
             .with_fullscreen(Some(Fullscreen::Borderless(None)))
+            // .with_visible(false)
+            .with_window_level(WindowLevel::AlwaysOnTop)
             .with_decorations(false)
             .with_transparent(true);
 
         let window = event_loop.create_window(window_attributes)?;
+        window.set_skip_taskbar(true);
 
         let window_state = WindowState::new(self, window)?;
         let window_id = window_state.window.id();

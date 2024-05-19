@@ -12,6 +12,7 @@ pub enum UserEvent {
 
     MouseInput(Binding<MouseButton>),
     KeyboardInput(Binding<&'static str>),
+    StartMinimized,
 }
 
 impl ApplicationHandler<UserEvent> for Application {
@@ -26,6 +27,12 @@ impl ApplicationHandler<UserEvent> for Application {
             }
             UserEvent::KeyboardInput(_) => {}
             UserEvent::MouseInput(_) => {}
+
+            UserEvent::StartMinimized => {
+                self.windows.values_mut().for_each(|window| {
+                    window.minimize();
+                });
+            }
         }
     }
 
