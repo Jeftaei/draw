@@ -98,6 +98,28 @@ impl Application {
                 window.toggle_fullscreen();
             }
 
+            // yeah these feel repetitive but i think it could be useful for something at somepoint
+            Actions::ToggleDrawMode => match window.draw_mode {
+                true => {
+                    window.exit_draw_mode();
+                }
+                false => {
+                    window.enter_draw_mode();
+                }
+            },
+
+            Actions::EnterDrawMode => {
+                if !window.draw_mode {
+                    window.enter_draw_mode();
+                }
+            }
+
+            Actions::ExitDrawMode => {
+                if window.draw_mode {
+                    window.exit_draw_mode();
+                }
+            }
+
             Actions::SetDrawing => {
                 window.drawing = !window.drawing;
             }

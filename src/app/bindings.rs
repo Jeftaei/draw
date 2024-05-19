@@ -66,17 +66,42 @@ pub const MOUSE_BINDINGS: &[Binding<MouseButton>] = &[
         Actions::SetDrawing,
         TriggerEvents::Toggle,
     ),
+    // Binding::new(
+    //     MouseButton::Right,
+    //     ModifiersState::CONTROL,
+    //     Actions::ToggleDecorations,
+    //     TriggerEvents::OneTime(ElementState::Pressed),
+    // ),
+];
+
+pub const KEYBOARD_BINDINGS: &[Binding<&'static str>] = &[
+    // Binding::new(
+    //     "F",
+    //     ModifiersState::empty(),
+    //     Actions::ToggleFullscreen,
+    //     TriggerEvents::OneTime(ElementState::Pressed),
+    // ),
+    // Binding::new(
+    //     "D",
+    //     ModifiersState::CONTROL.union(ModifiersState::ALT),
+    //     Actions::ToggleDrawMode,
+    //     TriggerEvents::OneTime(ElementState::Pressed),
+    // ),
+
+    // I only want to exit the program if its focused, and more than likely i wont even want this i just need a shortcut rn
     Binding::new(
-        MouseButton::Right,
+        "C",
         ModifiersState::CONTROL,
-        Actions::ToggleDecorations,
+        Actions::CloseWindow,
+        TriggerEvents::OneTime(ElementState::Pressed),
+    ),
+    Binding::new(
+        "ESC",
+        ModifiersState::empty(),
+        Actions::ExitDrawMode,
         TriggerEvents::OneTime(ElementState::Pressed),
     ),
 ];
 
-pub const KEYBOARD_BINDINGS: &[Binding<&'static str>] = &[Binding::new(
-    "F",
-    ModifiersState::empty(),
-    Actions::ToggleFullscreen,
     TriggerEvents::OneTime(ElementState::Pressed),
 )];

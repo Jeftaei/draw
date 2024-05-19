@@ -6,6 +6,11 @@ pub enum Actions {
     ToggleDecorations,
     ToggleFullscreen,
 
+    ToggleDrawMode,
+
+    EnterDrawMode,
+    ExitDrawMode,
+
     SetDrawing,
 }
 
@@ -17,6 +22,10 @@ impl Actions {
             Actions::ToggleMaximize => "Toggles maximize",
             Actions::ToggleDecorations => "Toggles decorations",
             Actions::ToggleFullscreen => "Toggles fullscreen",
+
+            Actions::ToggleDrawMode => "Toggles draw mode",
+            Actions::EnterDrawMode => "Enters draw mode",
+            Actions::ExitDrawMode => "Exits draw mode",
 
             Actions::SetDrawing => "Starts drawing when cursor moved",
         }
