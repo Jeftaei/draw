@@ -13,8 +13,6 @@ pub enum UserEvent {
     WakeUp,
     Redraw,
 
-    MouseInput(Binding<MouseButton>),
-    KeyboardInput(Binding<&'static str>),
     StartMinimized,
 }
 
@@ -28,8 +26,6 @@ impl ApplicationHandler<UserEvent> for Application {
                     window.window.request_redraw();
                 });
             }
-            UserEvent::KeyboardInput(_) => {}
-            UserEvent::MouseInput(_) => {}
 
             UserEvent::StartMinimized => {
                 self.windows.values_mut().for_each(|window| {
@@ -65,6 +61,7 @@ impl ApplicationHandler<UserEvent> for Application {
                 window.modifiers = modifiers.state();
             }
 
+            //
             WindowEvent::MouseInput {
                 device_id,
                 state,
