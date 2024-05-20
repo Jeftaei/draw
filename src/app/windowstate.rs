@@ -141,12 +141,15 @@ impl WindowState {
 
             (Some(pos), Some(pos2)) => {
                 self.canvas.draw(pos, pos2).expect("failed to draw");
+
                 Ok(())
             }
 
-            // technically this isnt "unreachable", but it would take some funky shit to actually hit it,
-            // (having a current position and no previous position, in which case it shouldnt ever actually try to draw?)
-            (_, _) => unreachable!(),
+            (Some(pos), _) => {
+                self.canvas.draw(pos, pos).expect("failed to draw");
+
+                Ok(())
+            }
         }
     }
 
