@@ -121,6 +121,7 @@ impl ApplicationHandler<UserEvent> for Application {
 
         match event {
             DeviceEvent::Button { .. } => {}
+
             DeviceEvent::Key(rke) => {
                 let keypressed = match rke.physical_key {
                     PhysicalKey::Code(k) => match k {

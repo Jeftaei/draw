@@ -129,7 +129,7 @@ impl Application {
             }
 
             Actions::SetDrawing => {
-                window.drawing = !window.drawing;
+                window.invert_drawing();
             }
         }
     }

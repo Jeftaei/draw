@@ -1,8 +1,8 @@
 use std::{error::Error, num::NonZeroU32, sync::Arc};
 
+use super::program::Application;
 use crate::modules::canvas::Canvas;
 
-use super::program::Application;
 use softbuffer::Surface;
 use wgpu::rwh::DisplayHandle;
 use winit::{
@@ -11,6 +11,7 @@ use winit::{
     window::{Fullscreen, Window},
 };
 
+#[derive(Debug)]
 pub struct CursorPos {
     pub current: Option<PhysicalPosition<f64>>,
     pub previous: Option<PhysicalPosition<f64>>,
@@ -78,6 +79,12 @@ impl WindowState {
 
         state.resize(size);
         Ok(state)
+    }
+
+    pub fn invert_drawing(&mut self) {
+        self.drawing = !self.drawing;
+
+        let _ = self.draw_at_cursor();
     }
 
     pub fn enter_draw_mode(&mut self) {
