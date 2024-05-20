@@ -12,6 +12,8 @@ const DEFAULT_BG_COLOR: u32 = 0xff181818;
 const CLEAR_BG_COLOR: u32 = 0x00000000;
 const DEFAULT_BRUSH_COLOR: u32 = 0xffffccaa;
 
+const BRUSH_SIZE: u32 = 2;
+
 pub struct Canvas {
     pub surface: Surface<DisplayHandle<'static>, Arc<Window>>,
 
@@ -31,7 +33,7 @@ impl Canvas {
 
         Ok(Self {
             surface,
-            brush_size: 1,
+            brush_size: BRUSH_SIZE,
             brush_color: DEFAULT_BRUSH_COLOR,
             canvas_size: c_size,
         })
