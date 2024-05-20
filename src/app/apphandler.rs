@@ -30,6 +30,7 @@ impl ApplicationHandler<UserEvent> for Application {
             UserEvent::StartMinimized => {
                 self.windows.values_mut().for_each(|window| {
                     window.minimize();
+                    window.draw_mode = false
                 });
             }
         }

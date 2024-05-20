@@ -83,9 +83,6 @@ impl WindowState {
     pub fn enter_draw_mode(&mut self) {
         self.draw_mode = true;
 
-        // unfortunately set_minimized stops us from recieving events
-        // self.window.set_minimized(false);
-        self.window.set_visible(true);
         self.window
             .set_fullscreen(Some(Fullscreen::Borderless(None)));
     }
@@ -94,8 +91,7 @@ impl WindowState {
         self.draw_mode = false;
 
         self.window.set_fullscreen(None);
-        self.window.set_visible(false);
-        // self.window.set_minimized(true);
+        self.window.set_minimized(true);
     }
 
     pub fn minimize(&mut self) {
