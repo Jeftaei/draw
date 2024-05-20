@@ -83,6 +83,7 @@ impl WindowState {
     pub fn enter_draw_mode(&mut self) {
         self.draw_mode = true;
 
+        self.window.set_minimized(false);
         self.window
             .set_fullscreen(Some(Fullscreen::Borderless(None)));
     }
