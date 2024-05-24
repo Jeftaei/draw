@@ -17,7 +17,7 @@ pub enum UserEvent {
 }
 
 impl ApplicationHandler<UserEvent> for Application {
-    fn user_event(&mut self, event_loop: &winit::event_loop::ActiveEventLoop, event: UserEvent) {
+    fn user_event(&mut self, _event_loop: &winit::event_loop::ActiveEventLoop, event: UserEvent) {
         match event {
             UserEvent::WakeUp => {}
             UserEvent::Redraw => {
@@ -62,21 +62,19 @@ impl ApplicationHandler<UserEvent> for Application {
                 window.modifiers = modifiers.state();
             }
 
-            WindowEvent::MouseWheel {
-                device_id,
-                delta,
-                phase,
-            } => {
-                dbg!(&delta, &phase);
-
-                if let MouseScrollDelta::LineDelta(_, y) = delta {
-                    // window.canvas.change_brush_size(y as i32);
-                }
-            }
+            // WindowEvent::MouseWheel {
+            //     device_id: _,
+            //     delta,
+            //     phase,
+            // } => {
+            //     if let MouseScrollDelta::LineDelta(_, y) = delta {
+            //         window.canvas.change_brush_size(y as i32);
+            //     }
+            // }
 
             //
             WindowEvent::MouseInput {
-                device_id,
+                device_id: _,
                 state,
                 button,
             } => {
@@ -88,9 +86,9 @@ impl ApplicationHandler<UserEvent> for Application {
             }
 
             WindowEvent::KeyboardInput {
-                device_id,
+                device_id: _,
                 event,
-                is_synthetic,
+                is_synthetic: _,
             } => {
                 let mods = window.modifiers;
                 let state = event.state;
@@ -107,7 +105,7 @@ impl ApplicationHandler<UserEvent> for Application {
             }
 
             WindowEvent::CursorMoved {
-                device_id,
+                device_id: _,
                 position,
             } => {
                 window.cursor_moved(position);
@@ -120,7 +118,7 @@ impl ApplicationHandler<UserEvent> for Application {
     fn device_event(
         &mut self,
         event_loop: &winit::event_loop::ActiveEventLoop,
-        device_id: winit::event::DeviceId,
+        _device_id: winit::event::DeviceId,
         event: winit::event::DeviceEvent,
     ) {
         // FIXME
@@ -203,7 +201,7 @@ impl ApplicationHandler<UserEvent> for Application {
         }
     }
 
-    fn exiting(&mut self, event_loop: &winit::event_loop::ActiveEventLoop) {
+    fn exiting(&mut self, _event_loop: &winit::event_loop::ActiveEventLoop) {
         self.context = None;
     }
 }

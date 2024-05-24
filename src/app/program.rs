@@ -81,7 +81,7 @@ impl Application {
 
     pub fn handle_action(
         &mut self,
-        event_loop: &ActiveEventLoop,
+        _event_loop: &ActiveEventLoop,
         window_id: WindowId,
         action: Actions,
     ) {
