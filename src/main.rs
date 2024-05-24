@@ -12,6 +12,7 @@ use winit::{
 };
 
 mod app;
+mod art;
 mod modules;
 
 fn main() -> Result<(), Box<dyn Error>> {

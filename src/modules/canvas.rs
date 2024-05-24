@@ -1,5 +1,10 @@
 use softbuffer::Surface;
-use std::{error::Error, num::NonZeroU32, sync::Arc};
+use std::{
+    error::Error,
+    num::NonZeroU32,
+    sync::Arc,
+    time::{Duration, Instant},
+};
 use wgpu::rwh::DisplayHandle;
 use winit::{
     dpi::{PhysicalPosition, PhysicalSize},
@@ -7,6 +12,7 @@ use winit::{
 };
 
 use crate::app::program::Application;
+use crate::art::numbers::get_art;
 
 const DEFAULT_BG_COLOR: u32 = 0xff181818;
 const CLEAR_BG_COLOR: u32 = 0x00000000;
@@ -18,6 +24,7 @@ pub struct Canvas {
     pub surface: Surface<DisplayHandle<'static>, Arc<Window>>,
 
     pub brush_size: u32,
+    brush_changed_at: Instant,
     pub brush_color: u32,
 
     pub canvas_size: PhysicalSize<u32>,
@@ -34,6 +41,7 @@ impl Canvas {
         Ok(Self {
             surface,
             brush_size: BRUSH_SIZE,
+            brush_changed_at: Instant::now(),
             brush_color: DEFAULT_BRUSH_COLOR,
             canvas_size: c_size,
         })
@@ -66,6 +74,63 @@ impl Canvas {
         buffer.fill(color.unwrap_or(CLEAR_BG_COLOR));
 
         println!("filling");
+
+        Ok(())
+    }
+
+    pub fn change_brush_size(&mut self, d: i32) {
+        let original = self.brush_size;
+
+        let n = (self.brush_size as i32 + d).clamp(1, 10) as u32;
+
+        // technically this would also trigger even if the original is the same, but its been 5 seconds so its whatever
+        if self.brush_changed_at.elapsed() < Duration::new(5, 0) || original == n {
+            return;
+        };
+
+        self.brush_size = n;
+
+        let _ = self.draw_number_in_corner(n, None);
+    }
+
+    pub fn draw_number_in_corner(
+        &mut self,
+        n: u32,
+        offset: Option<PhysicalPosition<u32>>,
+    ) -> Result<(), Box<dyn Error>> {
+        // offset is how far away from the borders we want to be
+        let offset = offset.unwrap_or(PhysicalPosition { x: 20, y: 100 });
+        let num = n;
+
+        let size = self.canvas_size;
+
+        // 16x16 being the pixel size of the number
+        let x_start = size.width - offset.x - 16;
+        let y_start = size.height - offset.y - 16;
+
+        let mut coords = Vec::new();
+
+        get_art(num).iter().enumerate().for_each(|(i, v)| {
+            let y_offset = (i / 16) as u32;
+
+            if v == &1 {
+                coords.push((
+                    (x_start + (i as u32) % 16) as i32,
+                    (y_start + y_offset) as i32,
+                ));
+            }
+        });
+
+        let pixels = self.bulk_pixel_convert(coords);
+
+        let mut buffer = self
+            .surface
+            .buffer_mut()
+            .expect("hopefully this doesnt fail ever !");
+        for px in pixels {
+            // dbg!(px);
+            buffer[px as usize] = self.brush_color;
+        }
 
         Ok(())
     }
