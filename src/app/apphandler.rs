@@ -8,12 +8,27 @@ use winit::keyboard::{Key, KeyCode, PhysicalKey};
 use winit::window::WindowId;
 use winit::{application::ApplicationHandler, event::WindowEvent};
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum TrayEvent {
+    RightClick,
+
+    Exit,
+}
+
+impl From<TrayEvent> for UserEvent {
+    fn from(v: TrayEvent) -> UserEvent {
+        UserEvent::TrayEvent(v)
+    }
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum UserEvent {
     WakeUp,
     Redraw,
 
     StartMinimized,
+
+    TrayEvent(TrayEvent),
 }
 
 impl ApplicationHandler<UserEvent> for Application {
@@ -33,6 +48,16 @@ impl ApplicationHandler<UserEvent> for Application {
                     window.draw_mode = false
                 });
             }
+
+            UserEvent::TrayEvent(t) => match t {
+                TrayEvent::RightClick => {
+                    self.tray.show_menu().unwrap();
+                }
+
+                TrayEvent::Exit => {
+                    _event_loop.exit();
+                }
+            },
         }
     }
 
@@ -55,6 +80,7 @@ impl ApplicationHandler<UserEvent> for Application {
             WindowEvent::Resized(size) => window.resize(size),
 
             WindowEvent::CloseRequested => {
+                println!("Requested Close");
                 self.windows.remove(&window_id);
             }
 
@@ -202,6 +228,7 @@ impl ApplicationHandler<UserEvent> for Application {
     }
 
     fn exiting(&mut self, _event_loop: &winit::event_loop::ActiveEventLoop) {
+        println!("Dropping context");
         self.context = None;
     }
 }

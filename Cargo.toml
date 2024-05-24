@@ -14,4 +14,5 @@ softbuffer = "0.4.2"
 winit = { version = "0.30", features = ["rwh_05"] }
 windows = { version = "0.56.0", features = ["Win32_UI_WindowsAndMessaging", "Win32_UI_Shell"] }
 serde = "1.0.201"
+trayicon = "0.2.0"
 

@@ -1,11 +1,13 @@
 use crate::modules::dmodifiers::DModifiers;
 
+use super::apphandler::UserEvent;
 use super::bindings::{DEVICE_BINDINGS, KEYBOARD_BINDINGS};
 use super::windowstate::WindowState;
 use super::{actions::Actions, bindings::MOUSE_BINDINGS};
 
 use softbuffer::Context;
 use std::{collections::HashMap, error::Error};
+use trayicon::TrayIcon;
 use wgpu::rwh::{DisplayHandle, HasDisplayHandle};
 use winit::event::ElementState;
 use winit::keyboard::KeyCode;
@@ -30,10 +32,12 @@ pub struct Application {
     pub dmods: DModifiers,
 
     pub keymap: HashMap<KeyCode, bool>,
+
+    pub tray: TrayIcon<UserEvent>,
 }
 
 impl Application {
-    pub fn new<T>(event_loop: &EventLoop<T>) -> Self {
+    pub fn new<T>(event_loop: &EventLoop<T>, tray: TrayIcon<UserEvent>) -> Self {
         // we HAVE to drop the context right before the event loop stops, or else we will fucking LEAK memory !
         let context = Some(
             Context::new(unsafe {
@@ -48,6 +52,8 @@ impl Application {
 
         Self {
             context,
+            tray,
+
             windows: Default::default(),
 
             dmods: Default::default(),
