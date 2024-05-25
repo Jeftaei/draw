@@ -42,8 +42,8 @@ fn main() -> Result<(), Box<dyn Error>> {
     std::thread::spawn(move || loop {
         let _ = _loop_proxy.send_event(UserEvent::Redraw);
 
-        // sleep for 1/60th of a second
-        // i Know its not 60fps whatever i just want to limit the amount of times its updating to a reasonable amount
+        // sleep for ~1/30th of a second
+        // i Know its not 30fps whatever i just want to limit the amount of times its updating to a reasonable amount
         std::thread::sleep(std::time::Duration::from_millis(16));
     });
 
