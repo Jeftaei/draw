@@ -73,8 +73,6 @@ impl Canvas {
         let mut buffer = self.surface.buffer_mut()?;
         buffer.fill(color.unwrap_or(CLEAR_BG_COLOR));
 
-        println!("filling");
-
         Ok(())
     }
 
@@ -155,14 +153,10 @@ impl Canvas {
 
     pub fn get_line_points(
         &self,
-        mut prev: PhysicalPosition<f64>,
+        prev: PhysicalPosition<f64>,
         curr: PhysicalPosition<f64>,
     ) -> Vec<(i32, i32)> {
         let mut points: Vec<(i32, i32)> = vec![];
-
-        if (prev.x - curr.x).abs() + (prev.y - curr.y).abs() <= 2.0 {
-            prev = curr;
-        };
 
         let (x1, y1) = (prev.x as i32, prev.y as i32);
         let (x2, y2) = (curr.x as i32, curr.y as i32);

@@ -83,6 +83,9 @@ impl WindowState {
 
     pub fn invert_drawing(&mut self) {
         self.drawing = !self.drawing;
+        // another workaround to stop the missing pixel shit from my Ass code
+        // when starting to draw we set previous pos to current to prevent drawing multiple pixels if cursor isnt moving
+        self.cursor_pos.previous = self.cursor_pos.current;
 
         let _ = self.draw_at_cursor();
     }
