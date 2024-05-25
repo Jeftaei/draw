@@ -80,7 +80,6 @@ impl ApplicationHandler<UserEvent> for Application {
             WindowEvent::Resized(size) => window.resize(size),
 
             WindowEvent::CloseRequested => {
-                println!("Requested Close");
                 self.windows.remove(&window_id);
             }
 
@@ -201,8 +200,6 @@ impl ApplicationHandler<UserEvent> for Application {
                     },
                 };
 
-                println!("an event has happened");
-
                 if let Some(action) =
                     Self::process_device_binding(keypressed, self.dmods, rke.state)
                 {
@@ -220,13 +217,11 @@ impl ApplicationHandler<UserEvent> for Application {
 
     fn about_to_wait(&mut self, event_loop: &winit::event_loop::ActiveEventLoop) {
         if self.windows.is_empty() {
-            println!("No windows, exiting...");
             event_loop.exit();
         }
     }
 
     fn exiting(&mut self, _event_loop: &winit::event_loop::ActiveEventLoop) {
-        println!("Dropping context");
         self.context = None;
     }
 }
