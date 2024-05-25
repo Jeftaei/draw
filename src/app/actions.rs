@@ -10,6 +10,8 @@ pub enum Actions {
 
     EnterDrawMode,
     ExitDrawMode,
+    RedoDraw,
+    UndoDraw,
 
     SetDrawing,
 }
@@ -26,6 +28,8 @@ impl Actions {
             Actions::ToggleDrawMode => "Toggles draw mode",
             Actions::EnterDrawMode => "Enters draw mode",
             Actions::ExitDrawMode => "Exits draw mode",
+            Actions::RedoDraw => "Redraws last undone action",
+            Actions::UndoDraw => "Undoes last action",
 
             Actions::SetDrawing => "Starts drawing when cursor moved",
         }

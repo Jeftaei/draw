@@ -104,6 +104,18 @@ pub const KEYBOARD_BINDINGS: &[Binding<&'static str>] = &[
         Actions::ExitDrawMode,
         TriggerEvents::OneTime(ElementState::Pressed),
     ),
+    Binding::new(
+        "Z",
+        Some(ModifiersState::CONTROL),
+        Actions::UndoDraw,
+        TriggerEvents::OneTime(ElementState::Pressed),
+    ),
+    Binding::new(
+        "Y",
+        Some(ModifiersState::CONTROL),
+        Actions::RedoDraw,
+        TriggerEvents::OneTime(ElementState::Pressed),
+    ),
 ];
 
 pub const DEVICE_BINDINGS: &[Binding<KeyCode>] = &[Binding::new(

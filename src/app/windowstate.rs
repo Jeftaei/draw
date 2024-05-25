@@ -1,7 +1,7 @@
 use std::{error::Error, num::NonZeroU32, sync::Arc};
 
 use super::program::Application;
-use crate::modules::canvas::Canvas;
+use crate::modules::canvas::{Canvas, PixelChange};
 
 use softbuffer::Surface;
 use wgpu::rwh::DisplayHandle;
@@ -49,9 +49,9 @@ pub struct WindowState {
 
     pub panned: PhysicalPosition<f32>,
 
-    pub drawing: bool,
-
     pub draw_mode: bool,
+
+    pub temp_actions: Vec<PixelChange>,
 }
 
 impl WindowState {
@@ -73,8 +73,9 @@ impl WindowState {
             zoom: Default::default(),
             panned: Default::default(),
 
-            drawing: false,
             draw_mode: false,
+
+            temp_actions: Vec::new(),
         };
 
         state.resize(size);
@@ -82,7 +83,8 @@ impl WindowState {
     }
 
     pub fn invert_drawing(&mut self) {
-        self.drawing = !self.drawing;
+        self.canvas.invert_drawing();
+
         // another workaround to stop the missing pixel shit from my Ass code
         // when starting to draw we set previous pos to current to prevent drawing multiple pixels if cursor isnt moving
         self.cursor_pos.previous = self.cursor_pos.current;
@@ -101,6 +103,8 @@ impl WindowState {
     pub fn exit_draw_mode(&mut self) {
         self.draw_mode = false;
 
+        self.canvas.clear_action_stack();
+
         self.window.set_fullscreen(None);
         self.window.set_minimized(true);
     }
@@ -112,7 +116,7 @@ impl WindowState {
     pub fn cursor_moved(&mut self, position: PhysicalPosition<f64>) {
         self.cursor_pos.set(Some(position));
 
-        if self.drawing {
+        if self.canvas.drawing {
             let _ = self.draw_at_cursor();
         };
     }

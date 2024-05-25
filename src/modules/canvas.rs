@@ -20,17 +20,29 @@ const DEFAULT_BRUSH_COLOR: u32 = 0xffffccaa;
 
 const BRUSH_SIZE: u32 = 2;
 
+#[derive(Debug, Clone, Copy)]
+pub struct PixelChange {
+    buf_index: u32,
+    before_data: u32,
+    after_data: u32,
+}
+
+type DrawChangeAction = Vec<PixelChange>;
+
 pub struct Canvas {
     pub surface: Surface<DisplayHandle<'static>, Arc<Window>>,
+
+    pub drawing: bool,
 
     pub brush_size: u32,
     brush_changed_at: Instant,
     pub brush_color: u32,
 
     pub canvas_size: PhysicalSize<u32>,
-    // zoom feature
 
-    // pan feature
+    pub action_stack: Vec<DrawChangeAction>,
+    pub redo_stack: Vec<DrawChangeAction>,
+    pub temp_stack: Vec<PixelChange>,
 }
 
 impl Canvas {
@@ -40,10 +52,16 @@ impl Canvas {
 
         Ok(Self {
             surface,
+
+            drawing: false,
             brush_size: BRUSH_SIZE,
             brush_changed_at: Instant::now(),
             brush_color: DEFAULT_BRUSH_COLOR,
             canvas_size: c_size,
+
+            action_stack: Vec::new(),
+            redo_stack: Vec::new(),
+            temp_stack: Vec::new(),
         })
     }
 
@@ -52,6 +70,25 @@ impl Canvas {
         buf.present().expect("failed to present buffer");
 
         Ok(())
+    }
+
+    pub fn invert_drawing(&mut self) {
+        self.drawing = !self.drawing;
+
+        match self.drawing {
+            true => {
+                self.temp_stack.clear();
+                self.redo_stack.clear();
+            }
+            false => {
+                // i assume this is slow in some way but, it doesnt seem to make any noticeable difference even with 10/15 brush size
+                self.temp_stack
+                    .sort_by(|a, b| a.buf_index.cmp(&b.buf_index));
+                self.temp_stack.dedup_by_key(|a| a.buf_index);
+
+                self.action_stack.push(self.temp_stack.clone());
+            }
+        }
     }
 
     pub fn resize_canvas(&mut self, size: PhysicalSize<u32>) {
@@ -74,6 +111,44 @@ impl Canvas {
         buffer.fill(color.unwrap_or(CLEAR_BG_COLOR));
 
         Ok(())
+    }
+
+    pub fn clear_action_stack(&mut self) {
+        self.action_stack.clear();
+        self.redo_stack.clear();
+        self.temp_stack.clear();
+    }
+
+    pub fn undo(&mut self) {
+        const UNDO: bool = false;
+
+        if let Some(action) = self.action_stack.pop() {
+            self.apply_changes(&action, UNDO);
+            self.redo_stack.push(action);
+        };
+    }
+
+    pub fn redo(&mut self) {
+        const REDO: bool = true;
+
+        if let Some(action) = self.redo_stack.pop() {
+            self.apply_changes(&action, REDO);
+            self.action_stack.push(action);
+        };
+    }
+
+    pub fn apply_changes(&mut self, v: &DrawChangeAction, t: bool) {
+        let mut buf = self
+            .surface
+            .buffer_mut()
+            .expect("failed to get buffer while applying changes");
+
+        for change in v {
+            buf[change.buf_index as usize] = match t {
+                true => change.after_data,
+                false => change.before_data,
+            };
+        }
     }
 
     pub fn change_brush_size(&mut self, d: i32) {
@@ -226,6 +301,8 @@ impl Canvas {
     ) -> Result<(), Box<dyn Error>> {
         let line_points = self.get_line_points(prev_location, location);
 
+        dbg!(&self.action_stack.len());
+
         let mut points: Vec<u32> = Vec::new();
 
         for p in line_points {
@@ -235,6 +312,12 @@ impl Canvas {
         let mut buffer = self.surface.buffer_mut()?;
         for px in points {
             // dbg!(px);
+            self.temp_stack.push(PixelChange {
+                buf_index: px,
+                before_data: buffer[px as usize],
+                after_data: self.brush_color,
+            });
+
             buffer[px as usize] = self.brush_color;
         }
 

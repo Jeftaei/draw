@@ -134,6 +134,14 @@ impl Application {
                 }
             }
 
+            Actions::RedoDraw => {
+                window.canvas.redo();
+            }
+
+            Actions::UndoDraw => {
+                window.canvas.undo();
+            }
+
             Actions::SetDrawing => {
                 window.invert_drawing();
             }
