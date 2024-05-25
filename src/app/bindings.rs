@@ -22,7 +22,7 @@ impl TriggerEvents {
 #[derive(Clone, Copy, Debug)]
 pub struct Binding<T: Eq> {
     trigger: T,
-    mods: ModifiersState,
+    mods: Option<ModifiersState>,
 
     conditions: TriggerEvents,
 
@@ -34,7 +34,7 @@ pub struct Binding<T: Eq> {
 impl<T: Eq> Binding<T> {
     const fn new(
         trigger: T,
-        mods: ModifiersState,
+        mods: Option<ModifiersState>,
         action: Actions,
         conditions: TriggerEvents,
     ) -> Self {
@@ -58,14 +58,22 @@ impl<T: Eq> Binding<T> {
             TriggerEvents::OneTime(evnt) => &evnt == state,
         };
 
-        &self.trigger == trigger && &self.mods == mods && condition
+        let mods_condition = match self.mods {
+            None => {
+                // Allow any set of modifiers to pass if nothing is explicitly set
+                true
+            }
+            Some(m) => &m == mods,
+        };
+
+        &self.trigger == trigger && mods_condition && condition
     }
 }
 
 pub const MOUSE_BINDINGS: &[Binding<MouseButton>] = &[
     Binding::new(
         MouseButton::Left,
-        ModifiersState::empty(),
+        None,
         Actions::SetDrawing,
         TriggerEvents::Toggle,
     ),
@@ -94,13 +102,13 @@ pub const KEYBOARD_BINDINGS: &[Binding<&'static str>] = &[
     // I only want to exit the program if its focused, and more than likely i wont even want this i just need a shortcut rn
     Binding::new(
         "C",
-        ModifiersState::CONTROL,
+        Some(ModifiersState::CONTROL),
         Actions::CloseWindow,
         TriggerEvents::OneTime(ElementState::Pressed),
     ),
     Binding::new(
         "ESC",
-        ModifiersState::empty(),
+        Some(ModifiersState::empty()),
         Actions::ExitDrawMode,
         TriggerEvents::OneTime(ElementState::Pressed),
     ),
@@ -120,7 +128,7 @@ pub const KEYBOARD_BINDINGS: &[Binding<&'static str>] = &[
 
 pub const DEVICE_BINDINGS: &[Binding<KeyCode>] = &[Binding::new(
     KeyCode::KeyD,
-    ModifiersState::CONTROL.union(ModifiersState::ALT),
+    Some(ModifiersState::CONTROL.union(ModifiersState::ALT)),
     Actions::ToggleDrawMode,
     TriggerEvents::OneTime(ElementState::Pressed),
 )];
