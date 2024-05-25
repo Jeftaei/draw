@@ -88,15 +88,13 @@ impl ApplicationHandler<UserEvent> for Application {
                 window.modifiers = modifiers.state();
             }
 
-            // WindowEvent::MouseWheel {
-            //     device_id: _,
-            //     delta,
-            //     phase,
-            // } => {
-            //     if let MouseScrollDelta::LineDelta(_, y) = delta {
-            //         window.canvas.change_brush_size(y as i32);
-            //     }
-            // }
+            WindowEvent::MouseWheel {
+                device_id: _,
+                delta: MouseScrollDelta::LineDelta(_, y),
+                phase: _,
+            } => {
+                window.canvas.change_brush_size(y as i32);
+            }
 
             //
             WindowEvent::MouseInput {
