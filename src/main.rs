@@ -44,7 +44,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 
         // sleep for 1/60th of a second
         // i Know its not 60fps whatever i just want to limit the amount of times its updating to a reasonable amount
-        std::thread::sleep(std::time::Duration::from_millis(8));
+        std::thread::sleep(std::time::Duration::from_millis(16));
     });
 
     let mut state = Application::new(&event_loop, tray);
