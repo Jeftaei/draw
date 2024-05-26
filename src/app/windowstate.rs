@@ -85,8 +85,6 @@ impl WindowState {
     pub fn invert_drawing(&mut self) {
         self.canvas.invert_drawing();
 
-        // another workaround to stop the missing pixel shit from my Ass code
-        // when starting to draw we set previous pos to current to prevent drawing multiple pixels if cursor isnt moving
         self.cursor_pos.previous = self.cursor_pos.current;
 
         let _ = self.draw_at_cursor();
@@ -142,8 +140,12 @@ impl WindowState {
     pub fn resize(&mut self, size: PhysicalSize<u32>) {
         self.canvas.resize_canvas(size);
 
+        // FIXME
         // when the window is resized we fill the buffer with default color again
         // should probably not do this, will figure out later
+        //
+        // ideally we want to not wipe the buffer, but only fill the spots that have become available because of the resize
+        // and also map all of the previous canvas into the new size since it will be offset after the resize
         let _ = self.canvas.fill(None);
     }
 

@@ -60,7 +60,7 @@ impl<T: Eq> Binding<T> {
 
         let mods_condition = match self.mods {
             None => {
-                // Allow any set of modifiers to pass if nothing is explicitly set
+                // Allow any set of modifiers to pass if not explicitly set
                 true
             }
             Some(m) => &m == mods,
@@ -70,36 +70,14 @@ impl<T: Eq> Binding<T> {
     }
 }
 
-pub const MOUSE_BINDINGS: &[Binding<MouseButton>] = &[
-    Binding::new(
-        MouseButton::Left,
-        None,
-        Actions::SetDrawing,
-        TriggerEvents::Toggle,
-    ),
-    // Binding::new(
-    //     MouseButton::Right,
-    //     ModifiersState::CONTROL,
-    //     Actions::ToggleDecorations,
-    //     TriggerEvents::OneTime(ElementState::Pressed),
-    // ),
-];
+pub const MOUSE_BINDINGS: &[Binding<MouseButton>] = &[Binding::new(
+    MouseButton::Left,
+    None,
+    Actions::SetDrawing,
+    TriggerEvents::Toggle,
+)];
 
 pub const KEYBOARD_BINDINGS: &[Binding<&'static str>] = &[
-    // Binding::new(
-    //     "F",
-    //     ModifiersState::empty(),
-    //     Actions::ToggleFullscreen,
-    //     TriggerEvents::OneTime(ElementState::Pressed),
-    // ),
-    // Binding::new(
-    //     "D",
-    //     ModifiersState::CONTROL.union(ModifiersState::ALT),
-    //     Actions::ToggleDrawMode,
-    //     TriggerEvents::OneTime(ElementState::Pressed),
-    // ),
-
-    // I only want to exit the program if its focused, and more than likely i wont even want this i just need a shortcut rn
     Binding::new(
         "C",
         Some(ModifiersState::CONTROL),

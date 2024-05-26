@@ -186,14 +186,11 @@ impl ApplicationHandler<UserEvent> for Application {
                             if rke.state.is_pressed() {
                                 *v = true;
                             }
-                            // if released event, and already released, do nothing (? ! ?)
                         }
-                        // Key has been pressed before, and has yet to recieve a release event
                         true => {
                             if rke.state.is_pressed() {
                                 return;
                             } else {
-                                // if its a release event and the key was marked as pressed, make it as not pressed
                                 *v = false
                             }
                         }
