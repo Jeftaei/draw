@@ -157,7 +157,7 @@ impl Canvas {
         let n = (self.brush_size as i32 + d).clamp(1, 10) as u32;
 
         // technically this would also trigger even if the original is the same, but its been 5 seconds so its whatever
-        if self.brush_changed_at.elapsed() < Duration::new(5, 0) || original == n {
+        if self.brush_changed_at.elapsed() < Duration::new(1, 0) || original == n {
             return;
         };
 
